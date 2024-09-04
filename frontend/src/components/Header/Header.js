@@ -1,13 +1,23 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import logo from "../../assets/img/argentBankLogo.webp";
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from "../../store/slices/authSlice";
 
+import logo from "../../assets/img/argentBankLogo.webp";
 import "./Header.css";
 
+
 const Header = () => {
-    // get url of the page
-    const location = useLocation();
-    const profilePage = location.pathname === "/profile";
+    // get data
+    const { token, user } = useSelector((state) => state.auth);
+    // send data
+    const dispatch = useDispatch();
+    const navigate =useNavigate();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate("/");
+    }
 
     return (
         <header>
@@ -21,16 +31,19 @@ const Header = () => {
                     <h1 className="sr-only">Argent Bank</h1>
                 </Link>
                 <div>
-                    {profilePage ?
+                    {token ?
                         <>
                             <Link className="main-nav-item" to="/profile">
                                 <i className="fa fa-user-circle"></i>
-                                Tony
+                                {user && user.userName}
                             </Link>
-                            <Link className="main-nav-item" to="/">
+                            <button
+                                className="main-nav-item"
+                                onClick={handleLogout}
+                            >
                                 <i className="fa fa-sign-out"></i>
                                 Sign Out
-                            </Link>
+                            </button>
                         </>
                         :
                         <Link to="/login" className="main-nav-item">
