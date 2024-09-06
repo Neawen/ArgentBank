@@ -12,7 +12,7 @@ const Header = () => {
     const { token, user } = useSelector((state) => state.auth);
     // send data
     const dispatch = useDispatch();
-    const navigate =useNavigate();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         dispatch(logout());

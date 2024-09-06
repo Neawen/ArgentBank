@@ -3,6 +3,6 @@ import authReducer from "./slices/authSlice";
 
 export const store = configureStore({
     reducer: {
-        auth: authReducer, //reducer to handle authentification state 
+        auth: authReducer, //reducer to handle authentication state 
     }
 })

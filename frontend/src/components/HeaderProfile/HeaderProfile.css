@@ -6,7 +6,26 @@
     padding: 10px;
 }
 
+.container-edit-button {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
 .header {
     color: #fff;
     margin-bottom: 2rem;
+}
+
+.form-edit-user {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-edit-user {
+    height: 1.5rem;
+    color: black;
+   
 }
