@@ -1,14 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// function to get user data from localstorage for initial state
+const getUser = () => {
+    const user = localStorage.getItem("user");
+    try {
+        return user ? JSON.parse(user) : null;
+    } catch (error) {
+        console.error("failed: ", error);
+        return null;
+    }
+}
+
 const authSlice = createSlice({
     // name of the slice for store
     name: "auth",
 
     initialState: {
-        token: null,
+        token: localStorage.getItem("token") || null,
         status: "idle",
         error: null,
-        user: null,
+        user: getUser(),
     },
 
     reducers:  {
@@ -34,6 +45,8 @@ const authSlice = createSlice({
             state.status = "idle";
             state.error = null;
             state.user = null;
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
         },
     }
 })

@@ -5,15 +5,16 @@ import "./HeaderProfile.css";
 
 const HeaderProfile = () => {
   const { user, token } = useSelector((state) => state.auth);
+  //state for sections to disappear
   const [disappearance, setDisappearance] = useState(false);
-  const [username, setUsername] = useState(user && (user.userName || ""));
+  const [username, setUsername] = useState(user ? user.userName : "");
   const dispatch = useDispatch();
 
   function handleDisappearance(e) {
     //if disappearance (edit section) is true
     if (disappearance) {
       //reset username
-      setUsername(user && (user.userName || ""));
+      setUsername(user ? user.userName : "");
     }
     //reverse state
     setDisappearance((prev) => !prev);
@@ -22,6 +23,8 @@ const HeaderProfile = () => {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    const tokenStored = localStorage.getItem("token");
+
     try {
       const response = await fetch(
         "http://localhost:3001/api/v1/user/profile",
@@ -29,7 +32,7 @@ const HeaderProfile = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token || tokenStored}`,
           },
           body: JSON.stringify({ userName: username }),
         }
@@ -39,6 +42,13 @@ const HeaderProfile = () => {
 
       if (response.ok) {
         dispatch(updateUser(data.body));
+
+        //if a token is stored in local storage
+        if (tokenStored) {
+          const userStored = JSON.parse(localStorage.getItem("user")) || {};
+          userStored.userName = username;
+          localStorage.setItem("user", JSON.stringify(userStored));
+        }
       } else {
         console.error("failed: ", data.message);
       }
@@ -70,7 +80,7 @@ const HeaderProfile = () => {
                 type="text"
                 id="username"
                 className="input-edit-user"
-                value={username}
+                value={username || (user && user.userName) || ""}
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
@@ -95,8 +105,14 @@ const HeaderProfile = () => {
               />
             </div>
             <div className="container-edit-button">
-              <button className="edit-button" type="submit">Save</button>
-              <button className="edit-button" type="button" onClick={handleDisappearance}>
+              <button className="edit-button" type="submit">
+                Save
+              </button>
+              <button
+                className="edit-button"
+                type="button"
+                onClick={handleDisappearance}
+              >
                 Cancel
               </button>
             </div>

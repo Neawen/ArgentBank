@@ -18,6 +18,7 @@ const SignIn = () => {
 
   const [emailData, setEmailData] = useState("");
   const [passwordData, setPasswordData] = useState("");
+  const [check, setCheck] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -38,6 +39,11 @@ const SignIn = () => {
       if (response.ok) {
         // send token to Redux store
         dispatch(loginSuccess({ token: data.body.token }));
+
+        // if rememberMe is checked
+        if (check) {
+          localStorage.setItem("token", data.body.token);
+        }
         navigate("/profile");
       } else {
         dispatch(loginFailure(data.message));
@@ -50,7 +56,9 @@ const SignIn = () => {
   // useEffect to save user data when login succeed
   useEffect(() => {
     const userProfile = async () => {
-      if (token) {
+      const storedToken = localStorage.getItem("token");
+
+      if (token || storedToken) {
         try {
           const response = await fetch(
             "http://localhost:3001/api/v1/user/profile",
@@ -58,7 +66,7 @@ const SignIn = () => {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token || storedToken}`,
               },
             }
           );
@@ -68,6 +76,11 @@ const SignIn = () => {
 
           if (response.ok) {
             dispatch(setUserProfile(data.body));
+            // if rememberMe is checked
+            if (check) {
+              localStorage.setItem("user", JSON.stringify(data.body));
+            }
+
           } else {
             console.error("failed: ", data.message);
           }
@@ -90,6 +103,7 @@ const SignIn = () => {
           <input
             type="text"
             id="username"
+            value={emailData || ""}
             onChange={(e) => setEmailData(e.target.value)}
           />
         </div>
@@ -98,11 +112,17 @@ const SignIn = () => {
           <input
             type="password"
             id="password"
+            value={passwordData || ""}
             onChange={(e) => setPasswordData(e.target.value)}
           />
         </div>
         <div className="input-remember">
-          <input type="checkbox" id="remember-me" />
+          <input
+            type="checkbox"
+            id="remember-me"
+            checked={check}
+            onChange={() => setCheck((prev) => !prev)}
+          />
           <label htmlFor="remember-me">Remember me</label>
         </div>
         <button

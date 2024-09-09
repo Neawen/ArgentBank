@@ -6,15 +6,21 @@ import Profile from "./Pages/Profile";
 import Error from "./Pages/Error/Error";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
+import { useSelector } from "react-redux";
 
 function App() {
+  const { token } = useSelector((state) => state.auth);
+  const tokenStored = localStorage.getItem("token");
+
   return (
     <Router>
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
+        {(token || tokenStored) && 
+          <Route path="/profile" element={<Profile />} />
+        }
         <Route path="*" element={<Error />} />
       </Routes>
       <Footer />
