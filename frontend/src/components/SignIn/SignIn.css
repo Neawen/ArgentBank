@@ -10,10 +10,6 @@
   color: #fff;
 }
 
-.sign-in-button-disabled {
-  background-color: grey;
-}
-
 .sign-in-content {
   box-sizing: border-box;
   background-color: white;
@@ -49,4 +45,10 @@
 .input-wrapper input {
   padding: 5px;
   font-size: 1.2rem;
+}
+
+.login-error {
+  background-color: #12002b;
+  color: white;
+  padding: 0.5rem;
 }

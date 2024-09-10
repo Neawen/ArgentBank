@@ -1,4 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { loginUser } from "../thunks/loginUser";
+import { getUserData } from "../thunks/getUserData";
+import { editUser } from "../thunks/editUser";
 
 // function to get user data from localstorage for initial state
 const getUser = () => {
@@ -23,23 +26,6 @@ const authSlice = createSlice({
     },
 
     reducers:  {
-        loginRequest(state) {
-            state.status = "loading";
-        },
-        loginSuccess(state, action) {
-            state.status = "succeeded";
-            state.token = action.payload.token;
-        },
-        loginFailure(state, action) {
-            state.status = "failed";
-            state.error = action.payload;
-        },
-        setUserProfile(state, action) {
-            state.user = action.payload;
-        },
-        updateUser(state, action) {
-            state.user = { ...state.user, ...action.payload };
-        },
         logout(state) {
             state.token = null;
             state.status = "idle";
@@ -48,8 +34,55 @@ const authSlice = createSlice({
             localStorage.removeItem("token");
             localStorage.removeItem("user");
         },
+    },
+
+    extraReducers: (builder) => {
+        // builder for login case
+        builder
+        .addCase(loginUser.pending, (state) => {
+            state.status = "loading";
+            state.error = null;
+        })
+        .addCase(loginUser.fulfilled, (state, action) => {
+            state.status = "succeeded";
+            state.token = action.payload.token;
+        })
+        .addCase(loginUser.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = action.payload || "Failed to login";
+        });
+
+        // builder to save user data
+        builder
+        .addCase(getUserData.pending, (state) => {
+            state.status = "loading";
+            state.error = null;
+        })
+        .addCase(getUserData.fulfilled, (state, action) => {
+            state.status = "succeeded";
+            state.user = action.payload;
+        })
+        .addCase(getUserData.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = action.payload || "Failed to fetch user data";
+        })
+
+        // builder for editing user
+        builder
+        .addCase(editUser.pending, (state) => {
+            state.status = 'loading';
+            state.error = null;
+        })
+        .addCase(editUser.fulfilled, (state, action) => {
+            state.status = "succeeded";
+            state.user = { ...state.user, ...action.payload };
+        })
+        .addCase(editUser.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = action.payload || "Failed to update user name";
+        })
     }
 })
 
-export const { loginRequest, loginSuccess, loginFailure, logout, setUserProfile, updateUser } = authSlice.actions;
+export const { logout } = authSlice.actions;
 export default authSlice.reducer;

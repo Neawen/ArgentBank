@@ -43,3 +43,7 @@ body {
   white-space: nowrap !important;
   /* 3 */
 }
+
+.button-disabled {
+  background-color: grey;
+}

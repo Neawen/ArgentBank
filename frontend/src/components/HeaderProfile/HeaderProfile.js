@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../../store/slices/authSlice";
 import "./HeaderProfile.css";
+import { editUser } from "../../store/thunks/editUser";
 
 const HeaderProfile = () => {
-  const { user, token } = useSelector((state) => state.auth);
+  const { user, token, status } = useSelector((state) => state.auth);
   //state for sections to disappear
   const [disappearance, setDisappearance] = useState(false);
   const [username, setUsername] = useState(user ? user.userName : "");
@@ -23,37 +23,14 @@ const HeaderProfile = () => {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const tokenStored = localStorage.getItem("token");
+    const storedToken = localStorage.getItem("token");
+    await dispatch(editUser({ token, storedToken, username })).unwrap();
 
-    try {
-      const response = await fetch(
-        "http://localhost:3001/api/v1/user/profile",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token || tokenStored}`,
-          },
-          body: JSON.stringify({ userName: username }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        dispatch(updateUser(data.body));
-
-        //if a token is stored in local storage
-        if (tokenStored) {
-          const userStored = JSON.parse(localStorage.getItem("user")) || {};
-          userStored.userName = username;
-          localStorage.setItem("user", JSON.stringify(userStored));
-        }
-      } else {
-        console.error("failed: ", data.message);
-      }
-    } catch (error) {
-      console.error("Error: ", error);
+    //if a token is stored in local storage
+    if (storedToken) {
+      const userStored = JSON.parse(localStorage.getItem("user")) || {};
+      userStored.userName = username;
+      localStorage.setItem("user", JSON.stringify(userStored));
     }
   }
 
@@ -105,7 +82,11 @@ const HeaderProfile = () => {
               />
             </div>
             <div className="container-edit-button">
-              <button className="edit-button" type="submit">
+              <button
+                className={`edit-button ${status === "loading" && "button-disabled"}`}
+                type="submit"
+                disabled={status === "loading"}
+              >
                 Save
               </button>
               <button
