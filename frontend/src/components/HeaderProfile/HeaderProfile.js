@@ -28,9 +28,9 @@ const HeaderProfile = () => {
 
     //if a token is stored in local storage
     if (storedToken) {
-      const userStored = JSON.parse(localStorage.getItem("user")) || {};
-      userStored.userName = username;
-      localStorage.setItem("user", JSON.stringify(userStored));
+      const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+      storedUser.userName = username;
+      localStorage.setItem("user", JSON.stringify(storedUser));
     }
   }
 

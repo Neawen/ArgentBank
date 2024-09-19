@@ -14,7 +14,7 @@ const SignIn = () => {
 
   const [emailData, setEmailData] = useState("");
   const [passwordData, setPasswordData] = useState("");
-  const [check, setCheck] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,20 +36,18 @@ const SignIn = () => {
         // wait until call api is resolved
         await dispatch(getUserData({ token, storedToken })).unwrap();
 
-        // if user data exists & check is true
-        if (user && check) {
+        // if user data exists & rememberMe is true
+        if (user && rememberMe) {
           localStorage.setItem("token", token);
           localStorage.setItem("user", JSON.stringify(user));
         }
 
         navigate("/profile");
-        console.log("stored token: ", storedToken);
-        
       }
     };
 
     userProfile();
-  }, [token, dispatch, check, user, navigate]);
+  }, [token, dispatch, rememberMe, user, navigate]);
 
   return (
     <section className="sign-in-content">
@@ -78,8 +76,8 @@ const SignIn = () => {
           <input
             type="checkbox"
             id="remember-me"
-            checked={check}
-            onChange={() => setCheck((prev) => !prev)}
+            checked={rememberMe}
+            onChange={() => setRememberMe((prev) => !prev)}
           />
           <label htmlFor="remember-me">Remember me</label>
         </div>
@@ -92,7 +90,7 @@ const SignIn = () => {
         >
           Sign In
         </button>
-        {/* if there is error when login, show api error */}
+        {/* if there is error when login, to show api error */}
         {error && <p className="login-error">{error}</p>}
       </form>
     </section>
