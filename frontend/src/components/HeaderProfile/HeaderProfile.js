@@ -7,6 +7,7 @@ const HeaderProfile = () => {
   const { user, token, status } = useSelector((state) => state.auth);
   //state for sections to disappear
   const [disappearance, setDisappearance] = useState(false);
+  // state to control edition input
   const [username, setUsername] = useState(user ? user.userName : "");
   const dispatch = useDispatch();
 

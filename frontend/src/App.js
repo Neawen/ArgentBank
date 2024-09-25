@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 
 function App() {
   const { token } = useSelector((state) => state.auth);
-  const tokenStored = localStorage.getItem("token");
+  const storedToken = localStorage.getItem("token");
 
   return (
     <Router>
@@ -18,7 +18,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        {(token || tokenStored) && 
+        {(token || storedToken) && 
           <Route path="/profile" element={<Profile />} />
         }
         <Route path="*" element={<Error />} />
